@@ -5,8 +5,8 @@ require('dotenv').config();
 const { createTasksTable } = require('./models/taskModel');
 const taskRoutes = require('./routes/taskRoutes');
 
-const app = express();
-const port = process.env.PORT || 3000;
+const app = express();  const port = process.env.PORT || 3000;
+  console.log(`Starting server with database: ${process.env.DATABASE_URL}`);
 
 // Middleware
 app.use(cors());
