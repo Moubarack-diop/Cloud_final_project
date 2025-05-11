@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 
-// Connexion sécurisée pour Railway
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -11,7 +10,7 @@ const pool = new Pool({
   query_timeout: 10000
 });
 
-// Création de la table "tasks" si elle n'existe pas
+// Create tasks table if it doesn't exist
 const createTasksTable = async () => {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS tasks (
@@ -23,36 +22,26 @@ const createTasksTable = async () => {
   `;
   try {
     await pool.query(createTableQuery);
-    console.log('✅ Table "tasks" créée avec succès');
+    console.log('Tasks table created successfully');
   } catch (error) {
-    console.error('❌ Erreur création table "tasks" :', error);
+    console.error('Error creating tasks table:', error);
     throw error;
   }
 };
 
-// Récupérer toutes les tâches
+// Get all tasks
 const getTasks = async () => {
-  try {
-    const query = 'SELECT * FROM tasks ORDER BY created_at DESC';
-    const { rows } = await pool.query(query);
-    return rows;
-  } catch (error) {
-    console.error('❌ Erreur récupération tasks :', error);
-    throw error;
-  }
+  const query = 'SELECT * FROM tasks ORDER BY created_at DESC';
+  const { rows } = await pool.query(query);
+  return rows;
 };
 
-// Créer une nouvelle tâche
+// Create a new task
 const createTask = async (title, description) => {
-  try {
-    const query = 'INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *';
-    const values = [title, description];
-    const { rows } = await pool.query(query, values);
-    return rows[0];
-  } catch (error) {
-    console.error('❌ Erreur création task :', error);
-    throw error;
-  }
+  const query = 'INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *';
+  const values = [title, description];
+  const { rows } = await pool.query(query, values);
+  return rows[0];
 };
 
 module.exports = {
