@@ -11,7 +11,8 @@ jobs:
     
     env:
       NODE_ENV: production
-      PORT: 3001
+      PORT: ${{ secrets.PORT || 3000 }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - name: Checkout code
@@ -26,16 +27,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests (optional)
+      - name: Run tests
         run: npm test
         continue-on-error: true
 
-      - name: Build (if needed)
-        run: npm run build --if-present
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
 
       - name: Deploy to Railway
-        uses: railwayapp/cli-action@v1
+        run: railway up
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
