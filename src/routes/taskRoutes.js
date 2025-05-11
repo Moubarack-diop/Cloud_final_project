@@ -2,28 +2,31 @@ const express = require('express');
 const router = express.Router();
 const { getTasks, createTask } = require('../models/taskModel');
 
-// Get all tasks
+// 📥 GET /api/tasks - Obtenir toutes les tâches
 router.get('/', async (req, res) => {
   try {
     const tasks = await getTasks();
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ Erreur lors de la récupération des tâches :', error);
+    res.status(500).json({ error: 'Erreur serveur lors de la récupération des tâches.' });
   }
 });
 
-// Create a new task
+// ➕ POST /api/tasks - Créer une nouvelle tâche
 router.post('/', async (req, res) => {
   const { title, description } = req.body;
-  if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+
+  if (!title || title.trim() === '') {
+    return res.status(400).json({ error: 'Le champ "title" est requis.' });
   }
 
   try {
-    const task = await createTask(title, description);
+    const task = await createTask(title.trim(), description || '');
     res.status(201).json(task);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ Erreur lors de la création de la tâche :', error);
+    res.status(500).json({ error: 'Erreur serveur lors de la création de la tâche.' });
   }
 });
 
